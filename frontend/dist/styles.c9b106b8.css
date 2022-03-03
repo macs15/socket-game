@@ -1,0 +1,15 @@
+html {
+  background-color: black;
+}
+
+#screen {
+  border: 10px solid #ccc;
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+  image-rendering: -moz-crisp-edges;
+  width: 400px;
+  height: 400px;
+}
+
+
+/*# sourceMappingURL=/styles.c9b106b8.css.map */

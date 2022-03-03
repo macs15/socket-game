@@ -1,0 +1,17 @@
+{
+  "name": "socket-game-frontend",
+  "version": "0.0.1",
+  "description": "my first socket.io app",
+  "main": "index.html",
+  "scripts": {
+    "start": "parcel index.html --open",
+    "build": "parcel build index.html"
+  },
+  "dependencies": {
+    "parcel-bundler": "^1.12.5",
+    "socket.io-client": "^4.4.1"
+  },
+  "devDependencies": {
+    "typescript": "^4.6.2"
+  }
+}
