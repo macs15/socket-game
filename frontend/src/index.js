@@ -45,6 +45,11 @@ socket.on('move-player', (command) => {
   }
 })
 
+socket.on('add-fruit', (command) => {
+  console.log(`Receiving ${command.type} -> ${command.fruitId}`)
+  game.addFruit(command)
+})
+
 socket.on('disconnect', () => {
   console.log(socket.id) // undefined
 })

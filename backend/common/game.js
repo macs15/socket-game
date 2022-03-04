@@ -20,7 +20,10 @@ export default class Game {
 
   start() {
     const frequency = 2000
-    // setInterval(addFruit, frequency)
+
+    setInterval(() => {
+      this.addFruit()
+    }, frequency)
   }
 
   subscribe(observerFunction) {
@@ -72,5 +75,55 @@ export default class Game {
     const moveFunction = movementKeys[keyPressed]
 
     moveFunction(player, screen)
+    this.checkForCollisionWithFruit({ playerId })
+  }
+
+  addFruit(command) {
+    const limitOfFruits = 1
+
+    if (Object.entries(this.state.fruits).length >= limitOfFruits) return
+
+    const fruitId = command
+      ? command.fruitId
+      : new Date().getTime().toString() + Math.floor(Math.random() * 10000000)
+    const fruitX = command ? command.fruitX : Math.floor(Math.random() * this.state.screen.width)
+    const fruitY = command ? command.fruitY : Math.floor(Math.random() * this.state.screen.height)
+
+    this.state.fruits[fruitId] = {
+      x: fruitX,
+      y: fruitY
+    }
+
+    this.notifyAll({
+      type: 'add-fruit',
+      fruitX,
+      fruitY,
+      fruitId
+    })
+  }
+
+  removeFruit(command) {
+    const fruitId = command.fruitId
+    delete this.state.fruits[fruitId]
+
+    this.notifyAll({
+      type: 'remove-fruit',
+      fruitId
+    })
+  }
+
+  checkForCollisionWithFruit(command) {
+    const playerId = command.playerId
+    const player = this.state.players[playerId]
+    const fruits = this.state.fruits
+
+    for (const fruitId in fruits) {
+      const fruit = fruits[fruitId]
+
+      if (player.x === fruit.x && player.y === fruit.y) {
+        console.log(`COLLISION between ${playerId} and ${fruitId}`)
+        this.removeFruit({ fruitId })
+      }
+    }
   }
 }

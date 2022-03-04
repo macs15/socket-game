@@ -12,6 +12,12 @@ const renderScreen = (screen, game, requestAnimationFrame, currentPlayerId) => {
     context.fillRect(player.x, player.y, 1, 1)
   }
 
+  for (const fruitId in game.state.fruits) {
+    const fruit = game.state.fruits[fruitId]
+    context.fillStyle = '#299b21'
+    context.fillRect(fruit.x, fruit.y, 1, 1)
+  }
+
   const currentPlayer = game.state.players[currentPlayerId]
 
   if (currentPlayer) {

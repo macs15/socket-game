@@ -6312,7 +6312,12 @@ var Game = /*#__PURE__*/function () {
   }, {
     key: "start",
     value: function start() {
-      var frequency = 2000; // setInterval(addFruit, frequency)
+      var _this = this;
+
+      var frequency = 2000;
+      setInterval(function () {
+        _this.addFruit();
+      }, frequency);
     }
   }, {
     key: "subscribe",
@@ -6373,6 +6378,56 @@ var Game = /*#__PURE__*/function () {
       var player = this.state.players[playerId];
       var moveFunction = _movementKeys.default[keyPressed];
       moveFunction(player, screen);
+      this.checkForCollisionWithFruit({
+        playerId: playerId
+      });
+    }
+  }, {
+    key: "addFruit",
+    value: function addFruit(command) {
+      var limitOfFruits = 1;
+      if (Object.entries(this.state.fruits).length >= limitOfFruits) return;
+      var fruitId = command ? command.fruitId : new Date().getTime().toString() + Math.floor(Math.random() * 10000000);
+      var fruitX = command ? command.fruitX : Math.floor(Math.random() * this.state.screen.width);
+      var fruitY = command ? command.fruitY : Math.floor(Math.random() * this.state.screen.height);
+      this.state.fruits[fruitId] = {
+        x: fruitX,
+        y: fruitY
+      };
+      this.notifyAll({
+        type: 'add-fruit',
+        fruitX: fruitX,
+        fruitY: fruitY,
+        fruitId: fruitId
+      });
+    }
+  }, {
+    key: "removeFruit",
+    value: function removeFruit(command) {
+      var fruitId = command.fruitId;
+      delete this.state.fruits[fruitId];
+      this.notifyAll({
+        type: 'remove-fruit',
+        fruitId: fruitId
+      });
+    }
+  }, {
+    key: "checkForCollisionWithFruit",
+    value: function checkForCollisionWithFruit(command) {
+      var playerId = command.playerId;
+      var player = this.state.players[playerId];
+      var fruits = this.state.fruits;
+
+      for (var fruitId in fruits) {
+        var fruit = fruits[fruitId];
+
+        if (player.x === fruit.x && player.y === fruit.y) {
+          console.log("COLLISION between ".concat(playerId, " and ").concat(fruitId));
+          this.removeFruit({
+            fruitId: fruitId
+          });
+        }
+      }
     }
   }]);
 
@@ -6472,6 +6527,12 @@ var renderScreen = function renderScreen(screen, game, requestAnimationFrame, cu
     context.fillRect(player.x, player.y, 1, 1);
   }
 
+  for (var fruitId in game.state.fruits) {
+    var fruit = game.state.fruits[fruitId];
+    context.fillStyle = '#299b21';
+    context.fillRect(fruit.x, fruit.y, 1, 1);
+  }
+
   var currentPlayer = game.state.players[currentPlayerId];
 
   if (currentPlayer) {
@@ -6531,6 +6592,10 @@ socket.on('move-player', function (command) {
   if (playerId !== command.playerId) {
     game.movePlayer(command);
   }
+});
+socket.on('add-fruit', function (command) {
+  console.log("Receiving ".concat(command.type, " -> ").concat(command.fruitId));
+  game.addFruit(command);
 });
 socket.on('disconnect', function () {
   console.log(socket.id); // undefined
