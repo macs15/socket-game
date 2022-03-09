@@ -8,7 +8,8 @@ export default class Game {
       screen: {
         height: 10,
         width: 10
-      }
+      },
+      score: {}
     }
   }
 

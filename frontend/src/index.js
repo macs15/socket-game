@@ -2,11 +2,13 @@ import { io } from 'socket.io-client'
 import Game from '../../backend/common/game.js'
 import KeyboardListener from './keyboard-listener.js'
 import renderScreen from './renderScreen'
+import Score from './score.js'
 
 const socket = io('http://localhost:3000')
 
 const game = new Game()
 const keyboardListener = new KeyboardListener()
+const score = new Score()
 
 socket.on('connect', () => {
   const playerId = socket.id
@@ -18,6 +20,7 @@ socket.on('connect', () => {
 socket.on('setup', (state) => {
   const playerId = socket.id
   game.setState(state)
+  score.addPlayerScore(state)
 
   keyboardListener.registerPlayerId = playerId
   keyboardListener.subscribe((command) => {
